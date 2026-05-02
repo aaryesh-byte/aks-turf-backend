@@ -1,11 +1,11 @@
 export default async function handler(req, res) {
-    // 1. CORS Headers to allow your frontend to talk to this backend
+    // 1. Double check CORS just in case
     res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Allows any domain to access
+    res.setHeader('Access-Control-Allow-Origin', '*'); 
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS,POST');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // 2. Handle the preflight "OPTIONS" request from the browser
+    // 2. Handle preflight request
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
@@ -15,11 +15,15 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Only POST allowed' });
     }
 
-    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-    const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+    // 4. PULL URL FROM VERCEL ENVIRONMENT VARIABLES
+    const SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
+
+    if (!SCRIPT_URL) {
+        return res.status(500).json({ success: false, error: 'Server configuration error: Missing Google Script URL' });
+    }
 
     try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
+        const response = await fetch(SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify(req.body),
             headers: { 'Content-Type': 'application/json' },
