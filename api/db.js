@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-    // 1. Double check CORS just in case
+    // 1. CORS Setup
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*'); 
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS,POST');
@@ -23,6 +23,7 @@ export default async function handler(req, res) {
     }
 
     try {
+        // Forward the exact request body to Google Apps Script
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify(req.body),
